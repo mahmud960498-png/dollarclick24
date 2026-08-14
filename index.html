@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dollarclick - Eco Telegram Mini App</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hind+Siliguri:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Monetag Rewarded Interstitial Ad Script -->
+    <script src='//libtl.com/sdk.js' data-zone='9825330' data-sdk='show_9825330'></script>
+
+    <style>
+        :root {
+            --bg-color: #0b1411;
+            --card-bg: rgba(18, 38, 30, 0.65);
+            --emerald-main: #10b981;
+            --leaf-green: #34d399;
+            --soft-mint: #a7f3d0;
+            --accent-gold: #f59e0b;
+            --text-main: #f0fdf4;
+            --border-eco: rgba(52, 211, 153, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; padding-bottom: 85px; }
+
+        .eco-ambient { position: fixed; top: -60px; left: 50%; transform: translateX(-50%); width: 280px; height: 180px; background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0,0,0,0) 75%); pointer-events: none; z-index: 0; }
+
+        .app-header { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: rgba(11, 20, 17, 0.75); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-eco); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); }
+        .brand-container { display: flex; align-items: center; gap: 12px; }
+        .logo-box { width: 42px; height: 42px; background: linear-gradient(135deg, #059669, #10b981); border-radius: 50% 12px 50% 50%; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; color: #ffffff; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .brand-details { display: flex; flex-direction: column; }
+        .brand-title { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.2px; background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8, #c084fc, #f43f5e, #fbbf24, #10b981); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: colorShift 6s ease-in-out infinite; }
+        @keyframes colorShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .brand-subtitle { font-size: 0.65rem; color: var(--leaf-green); font-weight: 700; text-transform: uppercase; }
+        .header-balance { display: flex; align-items: center; gap: 8px; background: rgba(20, 45, 35, 0.7); border: 1px solid var(--border-eco); padding: 6px 14px; border-radius: 25px; }
+        .eco-icon { color: var(--accent-gold); font-size: 0.95rem; }
+        .balance-amount { font-size: 0.88rem; font-weight: 700; color: #ffffff; }
+
+        .page-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .page-section.active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .notice-wrapper { padding: 0 16px; margin-top: 14px; }
+        .notice-card { background: var(--card-bg); border: 1px solid var(--border-eco); border-radius: 14px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(8px); position: relative; overflow: hidden; }
+        .notice-card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: linear-gradient(180deg, #34d399, #059669); }
+        .notice-badge { background: rgba(16, 185, 129, 0.15); color: var(--soft-mint); border: 1px solid rgba(52, 211, 153, 0.3); font-size: 0.65rem; font-weight: 800; padding: 4px 9px; border-radius: 20px; flex-shrink: 0; }
+        .marquee-box { overflow: hidden; white-space: nowrap; width: 100%; }
+        .marquee-content { display: inline-block; font-size: 0.82rem; color: #d1fae5; font-weight: 500; padding-left: 100%; animation: marquee 16s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        .user-bar-wrapper { padding: 0 16px; margin-top: 10px; }
+        .user-card { background: rgba(15, 30, 24, 0.7); border: 1px solid var(--border-eco); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; backdrop-filter: blur(10px); }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar-box { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #047857); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #fff; border: 2px solid rgba(52, 211, 153, 0.4); }
+        .user-details { display: flex; flex-direction: column; }
+        .user-name { font-size: 0.9rem; font-weight: 700; color: #ffffff; }
+        .user-handle { font-size: 0.75rem; color: var(--leaf-green); font-weight: 500; }
+        .user-id-badge { background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.25); padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; color: var(--soft-mint); font-weight: 600; }
+
+        .ad-banner-wrapper { padding: 0 16px; margin-top: 12px; display: flex; justify-content: center; }
+        .ad-card { width: 100%; background: rgba(15, 30, 24, 0.5); border: 1px solid var(--border-eco); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; align-items: center; }
+        .ad-label { font-size: 0.62rem; color: var(--leaf-green); font-weight: 600; margin-bottom: 4px; }
+        .ad-content { width: 100%; display: flex; justify-content: center; overflow-x: auto; }
+        .ad-content ins { max-width: 100% !important; display: block !important; margin: 0 auto; }
+
+        .tg-task-wrapper { padding: 0 16px; margin-top: 12px; }
+        .tg-task-card { background: rgba(18, 38, 30, 0.75); border: 1px solid var(--border-eco); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+        .task-header { display: flex; justify-content: space-between; align-items: center; }
+        .task-info { display: flex; align-items: center; gap: 12px; }
+        .tg-icon-box { width: 42px; height: 42px; background: linear-gradient(135deg, #229ed9, #0088cc); border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; color: #ffffff; flex-shrink: 0; }
+        .task-text { display: flex; flex-direction: column; }
+        .task-title { font-size: 0.92rem; font-weight: 700; color: #ffffff; }
+        .task-desc { font-size: 0.75rem; color: var(--leaf-green); font-weight: 500; }
+        .reward-badge { background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: var(--accent-gold); font-size: 0.78rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; }
+        .task-actions { display: flex; gap: 10px; width: 100%; }
+        .btn-join { flex: 1; background: linear-gradient(135deg, #229ed9, #0088cc); color: #ffffff; border: none; padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+        .btn-verify { flex: 1; background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; border: none; padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+        .btn-verified-success { background: rgba(16, 185, 129, 0.15) !important; border: 1px solid var(--leaf-green) !important; color: var(--leaf-green) !important; cursor: default !important; width: 100%; }
+        .status-msg { font-size: 0.72rem; text-align: center; font-weight: 600; display: none; }
+        .status-msg.error { color: #ef4444; display: block; }
+        .status-msg.success { color: #34d399; display: block; }
+
+        .live-payouts-wrapper { padding: 0 16px; margin-top: 14px; }
+        .live-payouts-card { background: rgba(18, 38, 30, 0.65); border: 1px solid var(--border-eco); border-radius: 16px; padding: 14px 16px; }
+        .payouts-title-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(52, 211, 153, 0.15); padding-bottom: 8px; }
+        .payouts-heading { font-size: 0.88rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px; }
+        .live-pulse-tag { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-size: 0.65rem; font-weight: 800; padding: 3px 8px; border-radius: 12px; display: flex; align-items: center; gap: 5px; }
+        .red-dot { width: 6px; height: 6px; background-color: #f87171; border-radius: 50%; animation: pulseDot 1.2s infinite; }
+        @keyframes pulseDot { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .payout-list { display: flex; flex-direction: column; gap: 10px; max-height: 230px; overflow: hidden; }
+        .payout-item { background: rgba(11, 24, 19, 0.6); border: 1px solid rgba(52, 211, 153, 0.12); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
+        .payout-user { display: flex; align-items: center; gap: 10px; }
+        .method-badge { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 800; color: #fff; }
+        .method-bkash { background: linear-gradient(135deg, #e2136e, #a0074a); }
+        .method-nagad { background: linear-gradient(135deg, #f7921e, #d87000); }
+        .method-rocket { background: linear-gradient(135deg, #8c3494, #5c1e63); }
+        .payout-info { display: flex; flex-direction: column; }
+        .payout-number { font-size: 0.82rem; font-weight: 700; color: #f0fdf4; }
+        .payout-time { font-size: 0.68rem; color: #9ca3af; }
+        .payout-amount-box { display: flex; flex-direction: column; align-items: flex-end; }
+        .payout-amount { font-size: 0.88rem; font-weight: 800; color: var(--leaf-green); }
+        .payout-status { font-size: 0.65rem; color: #38bdf8; font-weight: 600; }
+
+        .earn-wrapper { padding: 0 16px; margin-top: 16px; }
+        .earn-card { background: rgba(18, 38, 30, 0.85); border: 1px solid var(--border-eco); border-radius: 20px; padding: 20px 16px; backdrop-filter: blur(14px); display: flex; flex-direction: column; gap: 16px; text-align: center; }
+        .earn-header-icon { width: 60px; height: 60px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.8rem; color: #ffffff; }
+        .earn-title { font-size: 1.15rem; font-weight: 800; color: #ffffff; }
+        .earn-subtitle-text { font-size: 0.8rem; color: var(--soft-mint); margin-top: 4px; }
+        .progress-box { background: rgba(11, 24, 19, 0.8); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 700; }
+        .progress-label { color: var(--leaf-green); }
+        .progress-count { color: var(--accent-gold); }
+        .progress-bar-bg { width: 100%; height: 12px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #10b981, #38bdf8); transition: width 0.4s ease; }
+        .btn-watch-ad { background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; border: none; padding: 14px 20px; border-radius: 14px; font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; width: 100%; }
+        .btn-watch-ad:disabled { background: rgba(51, 65, 85, 0.6) !important; color: #94a3b8 !important; cursor: not-allowed; }
+        .timer-lock-box { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 10px; color: #f87171; font-size: 0.8rem; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 6px; }
+
+        .task-page-wrapper { padding: 0 16px; margin-top: 16px; }
+        .task-page-header { text-align: center; margin-bottom: 16px; }
+        .task-page-title { font-size: 1.2rem; font-weight: 800; color: #ffffff; }
+        .task-page-sub { font-size: 0.78rem; color: var(--soft-mint); margin-top: 4px; }
+        .direct-link-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .direct-link-card { background: rgba(18, 38, 30, 0.85); border: 1px solid var(--border-eco); border-radius: 16px; padding: 14px 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 10px; text-align: center; }
+        .link-card-icon { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #059669, #10b981); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: #fff; }
+        .link-card-title { font-size: 0.85rem; font-weight: 700; color: #ffffff; }
+        .link-reward-tag { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--accent-gold); font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 12px; }
+        .btn-visit-link { width: 100%; background: linear-gradient(135deg, #38bdf8, #0284c7); color: #ffffff; border: none; padding: 8px 10px; border-radius: 10px; font-size: 0.78rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 5px; cursor: pointer; }
+        .btn-visit-link.completed { background: rgba(16, 185, 129, 0.15) !important; border: 1px solid var(--leaf-green) !important; color: var(--leaf-green) !important; cursor: default !important; }
+
+        .ref-wrapper { padding: 0 16px; margin-top: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .ref-card { background: rgba(18, 38, 30, 0.85); border: 1px solid var(--border-eco); border-radius: 20px; padding: 20px 16px; backdrop-filter: blur(14px); display: flex; flex-direction: column; gap: 16px; text-align: center; }
+        .ref-icon-box { width: 65px; height: 65px; background: linear-gradient(135deg, #38bdf8, #0284c7); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 2rem; color: #ffffff; }
+        .ref-title { font-size: 1.2rem; font-weight: 800; color: #ffffff; }
+        .ref-subtitle { font-size: 0.82rem; color: var(--soft-mint); margin-top: 4px; }
+        .ref-stats-box { display: flex; gap: 10px; width: 100%; }
+        .stat-item { flex: 1; background: rgba(11, 24, 19, 0.8); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 14px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .stat-value { font-size: 1.1rem; font-weight: 800; color: var(--leaf-green); }
+        .stat-label { font-size: 0.72rem; color: #94a3b8; font-weight: 600; }
+        .ref-link-box { background: rgba(11, 24, 19, 0.9); border: 1px dashed var(--leaf-green); border-radius: 14px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .ref-link-text { font-size: 0.75rem; color: #cbd5e1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: left; }
+        .btn-copy-link { background: rgba(52, 211, 153, 0.15); border: 1px solid var(--leaf-green); color: var(--leaf-green); padding: 6px 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; gap: 5px; }
+        .btn-share-tg { background: linear-gradient(135deg, #229ed9, #0088cc); color: #ffffff; border: none; padding: 14px; border-radius: 14px; font-size: 0.92rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; width: 100%; text-decoration: none; }
+
+        .ref-history-card { background: rgba(18, 38, 30, 0.65); border: 1px solid var(--border-eco); border-radius: 16px; padding: 16px; }
+        .ref-history-title { font-size: 0.92rem; font-weight: 800; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(52, 211, 153, 0.15); padding-bottom: 8px; }
+        .ref-history-list { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; }
+        .ref-history-item { background: rgba(11, 24, 19, 0.8); border: 1px solid rgba(52, 211, 153, 0.15); border-radius: 12px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; }
+        .ref-user-details { display: flex; flex-direction: column; gap: 2px; }
+        .ref-user-name { font-size: 0.85rem; font-weight: 700; color: #ffffff; }
+        .ref-user-date { font-size: 0.65rem; color: var(--soft-mint); }
+        .ref-reward-tag { font-size: 0.82rem; font-weight: 800; color: var(--leaf-green); background: rgba(16, 185, 129, 0.12); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(52, 211, 153, 0.2); }
+
+        .withdraw-wrapper { padding: 0 16px; margin-top: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .withdraw-card { background: rgba(18, 38, 30, 0.85); border: 1px solid var(--border-eco); border-radius: 20px; padding: 20px 16px; backdrop-filter: blur(14px); display: flex; flex-direction: column; gap: 14px; }
+        .withdraw-header { text-align: center; }
+        .withdraw-title { font-size: 1.2rem; font-weight: 800; color: #ffffff; }
+        .withdraw-sub { font-size: 0.78rem; color: var(--soft-mint); margin-top: 4px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+        .form-label { font-size: 0.78rem; font-weight: 700; color: var(--leaf-green); }
+        .form-input, .form-select { width: 100%; background: rgba(11, 24, 19, 0.8); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 12px; padding: 12px; color: #ffffff; font-size: 0.88rem; outline: none; }
+        .form-input:focus, .form-select:focus { border-color: var(--leaf-green); }
+        .btn-withdraw-submit { background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; border: none; padding: 14px; border-radius: 14px; font-size: 0.95rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: 6px; }
+
+        .history-card { background: rgba(18, 38, 30, 0.65); border: 1px solid var(--border-eco); border-radius: 16px; padding: 16px; }
+        .history-title { font-size: 0.92rem; font-weight: 800; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(52, 211, 153, 0.15); padding-bottom: 8px; }
+        .history-list { display: flex; flex-direction: column; gap: 10px; }
+        .history-item { background: rgba(11, 24, 19, 0.8); border: 1px solid rgba(52, 211, 153, 0.15); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .history-info { display: flex; flex-direction: column; gap: 2px; }
+        .history-method { font-size: 0.85rem; font-weight: 700; color: #ffffff; }
+        .history-number { font-size: 0.75rem; color: #9ca3af; }
+        .history-date { font-size: 0.65rem; color: var(--soft-mint); }
+        .history-status-box { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .history-amount { font-size: 0.9rem; font-weight: 800; color: var(--leaf-green); }
+        .status-badge { font-size: 0.68rem; font-weight: 800; padding: 3px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; }
+        .status-pending { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: var(--accent-gold); }
+        .status-checking { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; }
+        .status-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: var(--leaf-green); }
+
+        .app-footer { margin-top: 20px; padding: 10px 16px; text-align: center; }
+        .footer-text { font-size: 0.75rem; font-weight: 700; background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8, #c084fc, #f43f5e, #fbbf24, #10b981); background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: colorShift 6s ease-in-out infinite; display: inline-block; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(11, 20, 17, 0.85); backdrop-filter: blur(16px); border-top: 1px solid var(--border-eco); display: flex; justify-content: space-around; align-items: center; padding: 8px 6px; z-index: 999; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 0.65rem; font-weight: 600; gap: 3px; flex: 1; text-decoration: none; cursor: pointer; }
+        .nav-item i { font-size: 1.15rem; }
+        .nav-item.active { color: var(--leaf-green); }
+        .nav-item.active i { filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.6)); }
+    </style>
+</head>
+<body>
+
+    <div class="eco-ambient"></div>
+
+    <header class="app-header">
+        <div class="brand-container">
+            <div class="logo-box"><i class="fa-solid fa-leaf"></i></div>
+            <div class="brand-details">
+                <span class="brand-title">Dollarclick</span>
+                <span class="brand-subtitle"><i class="fa-solid fa-circle-check"></i> Eco Platform</span>
+            </div>
+        </div>
+        <div class="header-balance">
+            <i class="fa-solid fa-seedling eco-icon"></i>
+            <span class="balance-amount" id="user-balance">৳0.00</span>
+        </div>
+    </header>
+
+    <!-- HOME PAGE -->
+    <div id="home-page" class="page-section active-page">
+        <div class="notice-wrapper">
+            <div class="notice-card">
+                <div class="notice-badge"><i class="fa-solid fa-bullhorn"></i> NOTICE</div>
+                <div class="marquee-box">
+                    <div class="marquee-content">🌿 Dollarclick-এ স্বাগতম! সহজ টাস্ক পূরণ করে কাজ করুন এবং দ্রুত সময়ে আপনার পেমেন্ট উইথড্র করে নিন।</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="user-bar-wrapper">
+            <div class="user-card">
+                <div class="user-profile">
+                    <div class="avatar-box"><i class="fa-solid fa-user"></i></div>
+                    <div class="user-details">
+                        <span class="user-name" id="user-fullname">John Doe</span>
+                        <span class="user-handle" id="user-username">@username</span>
+                    </div>
+                </div>
+                <div class="user-id-badge"><i class="fa-solid fa-fingerprint"></i> ID: <span id="user-id">123456789</span></div>
+            </div>
+        </div>
+
+        <div class="ad-banner-wrapper">
+            <div class="ad-card">
+                <span class="ad-label">Advertisement</span>
+                <div class="ad-content">
+                    <ins style="width: 728px;height:90px" data-width="728" data-height="90" class="ce4bc9d932d" data-domain="//data527.click" data-affquery="/a4efc5da7f01ce50d228/e4bc9d932d/?placementName=default"><script src="//data527.click/js/responsive.js" async></script></ins>
+                </div>
+            </div>
+        </div>
+
+        <div class="tg-task-wrapper">
+            <div class="tg-task-card" id="task-box">
+                <div class="task-header">
+                    <div class="task-info">
+                        <div class="tg-icon-box"><i class="fa-brands fa-telegram"></i></div>
+                        <div class="task-text">
+                            <span class="task-title">Join Telegram Channel</span>
+                            <span class="task-desc">অফিসিয়াল চ্যানেলে জয়েন করুন</span>
+                        </div>
+                    </div>
+                    <div class="reward-badge">+৳5</div>
+                </div>
+
+                <div class="task-actions" id="action-area">
+                    <a href="https://t.me/dollarclick" target="_blank" class="btn-join" id="btn-join-link"><i class="fa-paper-plane fa-solid"></i> Join Channel</a>
+                    <button class="btn-verify" id="btn-verify-task"><i class="fa-solid fa-circle-check"></i> Verify</button>
+                </div>
+                <div class="status-msg" id="status-message"></div>
+            </div>
+        </div>
+
+        <div class="live-payouts-wrapper">
+            <div class="live-payouts-card">
+                <div class="payouts-title-bar">
+                    <div class="payouts-heading"><i class="fa-solid fa-circle-dollar-to-slot"></i> সাম্প্রতিক সফল উত্তোলন</div>
+                    <div class="live-pulse-tag"><span class="red-dot"></span> LIVE</div>
+                </div>
+                <div class="payout-list" id="payout-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EARN PAGE -->
+    <div id="earn-page" class="page-section">
+        <div class="earn-wrapper">
+            <div class="earn-card">
+                <div class="earn-header-icon"><i class="fa-solid fa-rectangle-ad"></i></div>
+                <div>
+                    <div class="earn-title">Daily Watch Ads & Earn</div>
+                    <div class="earn-subtitle-text">১০ টি এড সম্পূর্ণ দেখলে পাবেন ১০ টাকা! (২৪ ঘণ্টায় ১ বার)</div>
+                </div>
+                <div class="progress-box">
+                    <div class="progress-info">
+                        <span class="progress-label">Ad Task Progress</span>
+                        <span class="progress-count" id="ad-progress-text">0 / 10 Completed</span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="ad-progress-bar"></div></div>
+                </div>
+                <div class="timer-lock-box" id="timer-lock-box"><i class="fa-solid fa-clock"></i> <span>Next task available in: <strong id="timer-text">24:00:00</strong></span></div>
+                <button class="btn-watch-ad" id="btn-watch-ad" onclick="handleWatchAd()"><i class="fa-solid fa-circle-play"></i> Watch Ad (+৳1)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TASK PAGE -->
+    <div id="task-page" class="page-section">
+        <div class="task-page-wrapper">
+            <div class="task-page-header">
+                <div class="task-page-title">Direct Link Tasks</div>
+                <div class="task-page-sub">প্রতিটি লিংকে ক্লিক করে ৫ সেকেন্ড ভিজিট করুন এবং পান ৳২ করে!</div>
+            </div>
+            <div class="direct-link-grid">
+                <div class="direct-link-card">
+                    <div class="link-card-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="link-card-title">Direct Link 1</div>
+                    <div class="link-reward-tag">+৳2.00</div>
+                    <button class="btn-visit-link" id="dl-btn-1" onclick="handleDirectLinkTask(1, 'https://www.effectivecpmnetwork.com/xen5vbdjw?key=3cdca6b334fbfb3f9bb1b48cff6f0c32')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Task</button>
+                </div>
+                <div class="direct-link-card">
+                    <div class="link-card-icon"><i class="fa-solid fa-fire"></i></div>
+                    <div class="link-card-title">Direct Link 2</div>
+                    <div class="link-reward-tag">+৳2.00</div>
+                    <button class="btn-visit-link" id="dl-btn-2" onclick="handleDirectLinkTask(2, 'https://www.effectivecpmnetwork.com/xen5vbdjw?key=3cdca6b334fbfb3f9bb1b48cff6f0c32')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Task</button>
+                </div>
+                <div class="direct-link-card">
+                    <div class="link-card-icon"><i class="fa-solid fa-gem"></i></div>
+                    <div class="link-card-title">Direct Link 3</div>
+                    <div class="link-reward-tag">+৳2.00</div>
+                    <button class="btn-visit-link" id="dl-btn-3" onclick="handleDirectLinkTask(3, 'https://www.effectivecpmnetwork.com/xen5vbdjw?key=3cdca6b334fbfb3f9bb1b48cff6f0c32')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Task</button>
+                </div>
+                <div class="direct-link-card">
+                    <div class="link-card-icon"><i class="fa-solid fa-star"></i></div>
+                    <div class="link-card-title">Direct Link 4</div>
+                    <div class="link-reward-tag">+৳2.00</div>
+                    <button class="btn-visit-link" id="dl-btn-4" onclick="handleDirectLinkTask(4, 'https://www.effectivecpmnetwork.com/xen5vbdjw?key=3cdca6b334fbfb3f9bb1b48cff6f0c32')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Task</button>
+                </div>
+                <div class="direct-link-card">
+                    <div class="link-card-icon"><i class="fa-solid fa-coins"></i></div>
+                    <div class="link-card-title">Direct Link 5</div>
+                    <div class="link-reward-tag">+৳2.00</div>
+                    <button class="btn-visit-link" id="dl-btn-5" onclick="handleDirectLinkTask(5, 'https://www.effectivecpmnetwork.com/xen5vbdjw?key=3cdca6b334fbfb3f9bb1b48cff6f0c32')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Task</button>
+                </div>
+                <div class="direct-link-card">
+                    <div class="link-card-icon"><i class="fa-solid fa-crown"></i></div>
+                    <div class="link-card-title">Direct Link 6</div>
+                    <div class="link-reward-tag">+৳2.00</div>
+                    <button class="btn-visit-link" id="dl-btn-6" onclick="handleDirectLinkTask(6, 'https://www.effectivecpmnetwork.com/xen5vbdjw?key=3cdca6b334fbfb3f9bb1b48cff6f0c32')"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REFERRAL PAGE -->
+    <div id="referral-page" class="page-section">
+        <div class="ref-wrapper">
+            <div class="ref-card">
+                <div class="ref-icon-box"><i class="fa-solid fa-user-plus"></i></div>
+                <div>
+                    <div class="ref-title">Invite Friends & Earn</div>
+                    <div class="ref-subtitle">প্রতিটি সফল রেফারে পান ৳১০ বোনাস! (অনলাইন ক্লাউড ট্র্যাকিং)</div>
+                </div>
+
+                <div class="ref-stats-box">
+                    <div class="stat-item">
+                        <span class="stat-value" id="ref-count-display">0</span>
+                        <span class="stat-label">Total Referrals</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="ref-earnings-display">৳0.00</span>
+                        <span class="stat-label">Referral Earnings</span>
+                    </div>
+                </div>
+
+                <div class="ref-link-box">
+                    <span class="ref-link-text" id="ref-link-display">https://t.me/litchioffcial123_bot/app?startapp=guest</span>
+                    <button class="btn-copy-link" id="btn-copy-ref" onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i> Copy</button>
+                </div>
+
+                <a href="javascript:void(0)" class="btn-share-tg" id="btn-share-telegram" onclick="shareOnTelegram()"><i class="fa-brands fa-telegram"></i> Share Link on Telegram</a>
+            </div>
+
+            <!-- Real-time Firebase Synced Referred List -->
+            <div class="ref-history-card">
+                <div class="ref-history-title"><i class="fa-solid fa-users"></i> Referred Members History</div>
+                <div class="ref-history-list" id="ref-history-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WITHDRAW PAGE -->
+    <div id="withdraw-page" class="page-section">
+        <div class="withdraw-wrapper">
+            <div class="withdraw-card">
+                <div class="withdraw-header">
+                    <div class="withdraw-title">Withdraw Funds</div>
+                    <div class="withdraw-sub">সর্বনিম্ন উত্তোলন ১০০ টাকা (৳100)</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Select Method</label>
+                    <select class="form-select" id="withdraw-method">
+                        <option value="bKash">bKash (বিকাশ)</option>
+                        <option value="Nagad">Nagad (নগদ)</option>
+                        <option value="Rocket">Rocket (রকেট)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Account Number</label>
+                    <input type="number" class="form-input" id="withdraw-phone" placeholder="017XXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount (BDT)</label>
+                    <input type="number" class="form-input" id="withdraw-amount" placeholder="Minimum 100" value="100">
+                </div>
+                <button class="btn-withdraw-submit" id="btn-submit-withdraw" onclick="handleWithdrawRequest()"><i class="fa-solid fa-paper-plane"></i> Submit Withdrawal Request</button>
+            </div>
+
+            <div class="history-card">
+                <div class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</div>
+                <div class="history-list" id="history-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer"><span class="footer-text">© 2024-2026 Dollarclick All rights reserved</span></footer>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="bottom-nav">
+        <a href="javascript:void(0)" class="nav-item active" id="nav-home" onclick="navigateTo('home')"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="javascript:void(0)" class="nav-item" id="nav-earn" onclick="navigateTo('earn')"><i class="fa-solid fa-sack-dollar"></i><span>Earn</span></a>
+        <a href="javascript:void(0)" class="nav-item" id="nav-task" onclick="navigateTo('task')"><i class="fa-solid fa-list-check"></i><span>Task</span></a>
+        <a href="javascript:void(0)" class="nav-item" id="nav-referral" onclick="navigateTo('referral')"><i class="fa-solid fa-user-plus"></i><span>Referral</span></a>
+        <a href="javascript:void(0)" class="nav-item" id="nav-withdraw" onclick="navigateTo('withdraw')"><i class="fa-solid fa-wallet"></i><span>Withdraw</span></a>
+        <a href="javascript:void(0)" class="nav-item" onclick="alert('Support Coming Soon!')"><i class="fa-solid fa-headset"></i><span>Support</span></a>
+    </nav>
+
+    <!-- Telegram SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- FIREBASE MODULE SDKs (v10 JS Modules) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, increment, onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // YOUR FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzuwEw2yDe-Bwv5ZA-cgIAx67bDbHMuAI",
+            authDomain: "dollarclick-31f9b.firebaseapp.com",
+            projectId: "dollarclick-31f9b",
+            storageBucket: "dollarclick-31f9b.firebasestorage.app",
+            messagingSenderId: "305610344625",
+            appId: "1:305610344625:web:fea7da0eb88c81ea28fa90",
+            measurementId: "G-84KWLB1YLE"
+        };
+
+        // INITIALIZE FIREBASE & FIRESTORE DATABASE
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // BOT DETAILS
+        const BOT_TOKEN = "8330742214:AAGioPQ8srK0ka9fQLvJMbuZKZ7JWVlByfE";
+        const ADMIN_CHAT_ID = "5605653469";
+
+        let currentUserId = "guest_user";
+        let currentUserName = "Guest User";
+        let userBalance = 0.00;
+        let watchedAds = 0;
+        let lastCompletedTime = 0;
+        let completedDirectLinks = [];
+        let withdrawHistory = [];
+        let referredMembersList = [];
+        let isHomeTgTaskCompleted = false;
+        let totalReferrals = 0;
+        let referralEarnings = 0.00;
+
+        const balanceDisplay = document.getElementById('user-balance');
+
+        // FIREBASE CLOUD DATABASE REALTIME SYNC
+        async function syncFirebaseUser(uid, name, inviterId) {
+            currentUserId = uid;
+            currentUserName = name;
+            const userRef = doc(db, "users", uid);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+                // First Time Cloud Registration
+                const newUserData = {
+                    userId: uid,
+                    userName: name,
+                    balance: 0.00,
+                    watchedAds: 0,
+                    lastCompletedTime: 0,
+                    completedDirectLinks: [],
+                    withdrawHistory: [],
+                    referredMembers: [],
+                    isHomeTgTaskCompleted: false,
+                    referredBy: inviterId || null,
+                    createdAt: new Date().toISOString()
+                };
+
+                await setDoc(userRef, newUserData);
+
+                // Process Cloud Referral Reward if Inviter Code Exists
+                if (inviterId && inviterId !== uid && inviterId !== "guest") {
+                    await processCloudReferral(inviterId, uid, name);
+                }
+            }
+
+            // REAL-TIME LISTENER FOR USER DATA UPDATE (INSTANT REFERRAL ADD)
+            onSnapshot(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.data();
+                    userBalance = data.balance || 0.00;
+                    watchedAds = data.watchedAds || 0;
+                    lastCompletedTime = data.lastCompletedTime || 0;
+                    completedDirectLinks = data.completedDirectLinks || [];
+                    withdrawHistory = data.withdrawHistory || [];
+                    referredMembersList = data.referredMembers || [];
+                    isHomeTgTaskCompleted = data.isHomeTgTaskCompleted || false;
+
+                    totalReferrals = referredMembersList.length;
+                    referralEarnings = totalReferrals * 10.00;
+
+                    balanceDisplay.innerText = '৳' + userBalance.toFixed(2);
+                    window.updateReferralPageStats();
+                    window.renderReferralHistoryUI();
+
+                    if (isHomeTgTaskCompleted) {
+                        window.renderCompletedTgTaskUI();
+                    }
+
+                    window.updateEarnUI();
+                    window.updateTaskUI();
+                    window.renderHistory();
+                }
+            });
+        }
+
+        // FIREBASE CLOUD REFERRAL PROCESSOR
+        async function processCloudReferral(inviterId, newUserId, newUserName) {
+            try {
+                const inviterRef = doc(db, "users", inviterId);
+                const inviterSnap = await getDoc(inviterRef);
+
+                if (inviterSnap.exists()) {
+                    const newRecord = {
+                        id: newUserId,
+                        name: newUserName,
+                        date: new Date().toLocaleString('bn-BD', { dateStyle: 'short', timeStyle: 'short' }),
+                        reward: 10.00
+                    };
+
+                    await updateDoc(inviterRef, {
+                        balance: increment(10.00),
+                        referredMembers: arrayUnion(newRecord)
+                    });
+
+                    // Send Telegram Alert Notice
+                    const alertText = `🎉 *New Cloud Referral Joined!*\n\n👤 *New User:* ${newUserName} (\`${newUserId}\`)\n🤝 *Invited By:* \`${inviterId}\`\n💰 *Cloud Bonus Added:* ৳10.00`;
+                    const tgUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_CHAT_ID}&text=${encodeURIComponent(alertText)}&parse_mode=Markdown`;
+                    fetch(tgUrl).catch(e => console.log('Telegram Alert'));
+                }
+            } catch (err) {
+                console.error("Cloud Referral Error:", err);
+            }
+        }
+
+        // EXPOSE GLOBAL FUNCTIONS TO WINDOW
+        window.updateReferralPageStats = function() {
+            const countElem = document.getElementById('ref-count-display');
+            const earnElem = document.getElementById('ref-earnings-display');
+            if (countElem) countElem.innerText = totalReferrals;
+            if (earnElem) earnElem.innerText = '৳' + referralEarnings.toFixed(2);
+        };
+
+        window.renderReferralHistoryUI = function() {
+            const container = document.getElementById('ref-history-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (referredMembersList.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#9ca3af; font-size:0.8rem; padding:12px;">আপনি এখনও কাউকে রেফার করেননি।</div>';
+                return;
+            }
+
+            referredMembersList.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'ref-history-item';
+                div.innerHTML = `
+                    <div class="ref-user-details">
+                        <span class="ref-user-name"><i class="fa-solid fa-user-check" style="color:#34d399;"></i> ${item.name}</span>
+                        <span class="ref-user-date">${item.date}</span>
+                    </div>
+                    <div class="ref-reward-tag">+৳${item.reward}.00</div>
+                `;
+                container.appendChild(div);
+            });
+        };
+
+        window.renderCompletedTgTaskUI = function() {
+            document.getElementById('action-area').innerHTML = `
+                <button class="btn-verify btn-verified-success" disabled>
+                    <i class="fa-solid fa-circle-check" style="color: #34d399;"></i> Verified (৳5 Added)
+                </button>
+            `;
+            const statusMsg = document.getElementById('status-message');
+            if (statusMsg) {
+                statusMsg.className = 'status-msg success';
+                statusMsg.innerText = '🎉 আপনি পূর্বে এই টাস্কটি সম্পূর্ণ করেছেন!';
+            }
+        };
+
+        window.navigateTo = function(page) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active-page'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+
+            if (page === 'home') {
+                document.getElementById('home-page').classList.add('active-page');
+                document.getElementById('nav-home').classList.add('active');
+            } else if (page === 'earn') {
+                document.getElementById('earn-page').classList.add('active-page');
+                document.getElementById('nav-earn').classList.add('active');
+            } else if (page === 'task') {
+                document.getElementById('task-page').classList.add('active-page');
+                document.getElementById('nav-task').classList.add('active');
+            } else if (page === 'referral') {
+                document.getElementById('referral-page').classList.add('active-page');
+                document.getElementById('nav-referral').classList.add('active');
+                window.updateReferralPageStats();
+                window.renderReferralHistoryUI();
+            } else if (page === 'withdraw') {
+                document.getElementById('withdraw-page').classList.add('active-page');
+                document.getElementById('nav-withdraw').classList.add('active');
+                window.renderHistory();
+            }
+        };
+
+        // HOME TELEGRAM TASK
+        let hasClickedJoin = false;
+        const joinBtn = document.getElementById('btn-join-link');
+        const verifyBtn = document.getElementById('btn-verify-task');
+        const statusMsg = document.getElementById('status-message');
+
+        if (joinBtn) {
+            joinBtn.addEventListener('click', () => {
+                hasClickedJoin = true;
+                if (statusMsg) { statusMsg.className = 'status-msg'; statusMsg.innerText = ''; }
+            });
+        }
+
+        if (verifyBtn) {
+            verifyBtn.addEventListener('click', async () => {
+                if (isHomeTgTaskCompleted) return;
+                if (!hasClickedJoin) {
+                    if (statusMsg) {
+                        statusMsg.className = 'status-msg error';
+                        statusMsg.innerText = '❌ আগে "Join Channel" এ ক্লিক করে জয়েন করুন!';
+                    }
+                    return;
+                }
+
+                verifyBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+                verifyBtn.disabled = true;
+
+                setTimeout(async () => {
+                    const userRef = doc(db, "users", currentUserId);
+                    await updateDoc(userRef, {
+                        isHomeTgTaskCompleted: true,
+                        balance: increment(5.00)
+                    });
+                }, 1500);
+            });
+        }
+
+        // LIVE PAYOUT TICKER
+        const prefixes = ['017', '018', '019', '016', '013', '015'];
+        const methods = [{ code: 'bK', class: 'method-bkash' }, { code: 'NG', class: 'method-nagad' }, { code: 'RK', class: 'method-rocket' }];
+        const amounts = [100, 150, 200, 250, 300, 500];
+        let activePayouts = [];
+        const payoutContainer = document.getElementById('payout-container');
+
+        function toBengaliNum(num) { const bnNums = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯']; return num.toString().replace(/\d/g, d => bnNums[d]); }
+        function getRelativeTime(secondsAgo) {
+            if (secondsAgo < 10) return 'এখনি মাত্র';
+            if (secondsAgo < 60) return `${toBengaliNum(Math.floor(secondsAgo))} সেকেন্ড আগে`;
+            return `${toBengaliNum(Math.floor(secondsAgo / 60))} মিনিট আগে`;
+        }
+
+        function renderPayouts() {
+            const now = Date.now();
+            if (!payoutContainer) return;
+            payoutContainer.innerHTML = '';
+            activePayouts.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'payout-item';
+                div.innerHTML = `
+                    <div class="payout-user">
+                        <div class="method-badge ${item.method.class}">${item.method.code}</div>
+                        <div class="payout-info"><span class="payout-number">${item.phone}</span><span class="payout-time">${getRelativeTime(Math.floor((now - item.timestamp) / 1000))}</span></div>
+                    </div>
+                    <div class="payout-amount-box"><span class="payout-amount">+৳${toBengaliNum(item.amount)}.০০</span><span class="payout-status"><i class="fa-solid fa-circle-check"></i> Success</span></div>
+                `;
+                payoutContainer.appendChild(div);
+            });
+        }
+
+        function addNewPayout() {
+            activePayouts.unshift({ phone: `${prefixes[Math.floor(Math.random()*prefixes.length)]}***${Math.floor(1000+Math.random()*9000)}`, method: methods[Math.floor(Math.random()*methods.length)], amount: amounts[Math.floor(Math.random()*amounts.length)], timestamp: Date.now() });
+            if (activePayouts.length > 3) activePayouts.pop();
+            renderPayouts();
+        }
+
+        // EARN ADS LOGIC
+        const TOTAL_ADS = 10;
+        const watchAdBtn = document.getElementById('btn-watch-ad');
+        const progressBar = document.getElementById('ad-progress-bar');
+        const progressText = document.getElementById('ad-progress-text');
+        const timerLockBox = document.getElementById('timer-lock-box');
+        const timerText = document.getElementById('timer-text');
+
+        window.updateEarnUI = function() {
+            balanceDisplay.innerText = '৳' + userBalance.toFixed(2);
+            const now = Date.now();
+            const timePassed = now - lastCompletedTime;
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+
+            if (lastCompletedTime && timePassed < twentyFourHours) {
+                if (watchAdBtn) { watchAdBtn.disabled = true; watchAdBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Task Completed Today'; }
+                if (timerLockBox) timerLockBox.style.display = 'flex';
+                if (progressBar) progressBar.style.width = '100%';
+                if (progressText) progressText.innerText = '10 / 10 Completed';
+                startCountdown(twentyFourHours - timePassed);
+            } else {
+                if (lastCompletedTime && timePassed >= twentyFourHours) {
+                    watchedAds = 0;
+                    lastCompletedTime = 0;
+                    const userRef = doc(db, "users", currentUserId);
+                    updateDoc(userRef, { watchedAds: 0, lastCompletedTime: 0 });
+                }
+                if (watchAdBtn) { watchAdBtn.disabled = false; watchAdBtn.innerHTML = `<i class="fa-solid fa-circle-play"></i> Watch Ad (${watchedAds + 1}/${TOTAL_ADS})`; }
+                if (timerLockBox) timerLockBox.style.display = 'none';
+                const percentage = (watchedAds / TOTAL_ADS) * 100;
+                if (progressBar) progressBar.style.width = percentage + '%';
+                if (progressText) progressText.innerText = `${watchedAds} / ${TOTAL_ADS} Completed`;
+            }
+        };
+
+        window.handleWatchAd = function() {
+            if (watchedAds >= TOTAL_ADS) return;
+            if (watchAdBtn) { watchAdBtn.disabled = true; watchAdBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading Ad...'; }
+
+            if (typeof show_9825330 === 'function') {
+                show_9825330().then(() => { onAdWatchedSuccess(); }).catch(() => { alert('বিজ্ঞাপন লোড হতে সমস্যা হয়েছে।'); window.updateEarnUI(); });
+            } else {
+                setTimeout(() => { onAdWatchedSuccess(); }, 1500);
+            }
+        };
+
+        async function onAdWatchedSuccess() {
+            watchedAds++;
+            const userRef = doc(db, "users", currentUserId);
+
+            if (watchedAds >= TOTAL_ADS) {
+                lastCompletedTime = Date.now();
+                await updateDoc(userRef, {
+                    watchedAds: watchedAds,
+                    lastCompletedTime: lastCompletedTime,
+                    balance: increment(10.00)
+                });
+                alert('🎉 অভিনন্দন! ১০ টি এড সফলভাবে দেখে ৳১০ বোনাস পেয়েছেন!');
+            } else {
+                await updateDoc(userRef, { watchedAds: watchedAds });
+                alert(`✅ এড দেখা সফল হয়েছে! অগ্রগতি: ${watchedAds}/${TOTAL_ADS}`);
+            }
+            window.updateEarnUI();
+        }
+
+        let timerInterval;
+        function startCountdown(msLeft) {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (msLeft <= 0) { clearInterval(timerInterval); window.updateEarnUI(); return; }
+                msLeft -= 1000;
+                const hours = Math.floor(msLeft / (1000 * 60 * 60));
+                const mins = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((msLeft % (1000 * 60)) / 1000);
+                if (timerText) timerText.innerText = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // DIRECT LINK TASKS
+        window.updateTaskUI = function() {
+            for (let i = 1; i <= 6; i++) {
+                const btn = document.getElementById(`dl-btn-${i}`);
+                if (btn) {
+                    if (completedDirectLinks.includes(i)) {
+                        btn.className = 'btn-visit-link completed';
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#34d399"></i> Completed';
+                    } else {
+                        btn.className = 'btn-visit-link';
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Task';
+                    }
+                }
+            }
+        };
+
+        window.handleDirectLinkTask = function(taskId, url) {
+            if (completedDirectLinks.includes(taskId)) return;
+            const btn = document.getElementById(`dl-btn-${taskId}`);
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening...'; }
+
+            window.open(url, '_blank');
+
+            setTimeout(async () => {
+                const userRef = doc(db, "users", currentUserId);
+                await updateDoc(userRef, {
+                    completedDirectLinks: arrayUnion(taskId),
+                    balance: increment(2.00)
+                });
+                alert(`🎉 Direct Link Task ${taskId} সম্পূর্ণ হয়েছে এবং ৳২ বোনাস দেওয়া হয়েছে!`);
+                window.updateTaskUI();
+            }, 5000);
+        };
+
+        // REFERRAL LINK SHARE & COPY
+        let referralLink = `https://t.me/litchioffcial123_bot/app?startapp=guest`;
+        function updateReferralLinkUI(userId) {
+            referralLink = `https://t.me/litchioffcial123_bot/app?startapp=${userId}`;
+            const refTextElem = document.getElementById('ref-link-display');
+            if (refTextElem) refTextElem.innerText = referralLink;
+        }
+
+        window.copyReferralLink = function() {
+            navigator.clipboard.writeText(referralLink).then(() => {
+                const btn = document.getElementById('btn-copy-ref');
+                if (btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                    setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy'; }, 2000);
+                }
+            });
+        };
+
+        window.shareOnTelegram = function() {
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('🔥 Dollarclick অ্যাপে জয়েন করে ফ্রিতে ইনকাম শুরু করুন! প্রতি রেফারে পাবেন ৳১০ বোনাস!')}`;
+            window.open(shareUrl, '_blank');
+        };
+
+        // WITHDRAW SYSTEM
+        window.renderHistory = function() {
+            const historyContainer = document.getElementById('history-container');
+            if (!historyContainer) return;
+            historyContainer.innerHTML = '';
+
+            if (withdrawHistory.length === 0) {
+                historyContainer.innerHTML = '<div style="text-align:center; color:#9ca3af; font-size:0.8rem; padding:10px;">কোনো উইথড্র হিস্টোরি পাওয়া যায়নি।</div>';
+                return;
+            }
+
+            const now = Date.now();
+            withdrawHistory.forEach(item => {
+                const timePassed = now - item.timestamp;
+                let statusBadge = timePassed < 7200000 ? '<span class="status-badge status-pending"><i class="fa-solid fa-clock"></i> Pending</span>' : '<span class="status-badge status-success"><i class="fa-solid fa-circle-check"></i> Success</span>';
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="history-info"><span class="history-method">${item.method}</span><span class="history-number">${item.phone}</span><span class="history-date">${new Date(item.timestamp).toLocaleString('bn-BD')}</span></div>
+                    <div class="history-status-box"><span class="history-amount">৳${item.amount}</span>${statusBadge}</div>
+                `;
+                historyContainer.appendChild(div);
+            });
+        };
+
+        window.handleWithdrawRequest = async function() {
+            const method = document.getElementById('withdraw-method').value;
+            const phone = document.getElementById('withdraw-phone').value.trim();
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+
+            if (!phone || phone.length < 11) { alert('⚠️ সঠিক ১১ ডিজিটের ফোন নম্বর দিন!'); return; }
+            if (isNaN(amount) || amount < 100) { alert('⚠️ সর্বনিম্ন উত্তোলন limit ১০০ টাকা!'); return; }
+            if (amount > userBalance) { alert('⚠️ পর্যাপ্ত ব্যালেন্স নেই!'); return; }
+
+            const submitBtn = document.getElementById('btn-submit-withdraw');
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; }
+
+            const text = `📩 *New Withdrawal Request!*\n\n👤 *User Name:* ${currentUserName}\n🆔 *User ID:* \`${currentUserId}\`\n💳 *Method:* ${method}\n📱 *Phone:* \`${phone}\`\n💰 *Amount:* ৳${amount}\n⏰ *Time:* ${new Date().toLocaleString()}`;
+            const tgUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+
+            fetch(tgUrl).then(async () => {
+                const newHistoryRecord = { method: method, phone: phone, amount: amount, timestamp: Date.now() };
+                const userRef = doc(db, "users", currentUserId);
+
+                await updateDoc(userRef, {
+                    balance: increment(-amount),
+                    withdrawHistory: arrayUnion(newHistoryRecord)
+                });
+
+                alert('🎉 আপনার উইথড্র রিকোয়েস্ট সফলভাবে জমা হয়েছে!');
+                document.getElementById('withdraw-phone').value = '';
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Withdrawal Request'; }
+            }).catch(err => {
+                alert('নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।');
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Withdrawal Request'; }
+            });
+        };
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            let tgUserId = "guest_" + Math.floor(100000 + Math.random() * 900000);
+            let tgUserName = "Guest User";
+            let inviterId = "";
+
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                const user = tg.initDataUnsafe?.user;
+                if (user) {
+                    tgUserId = user.id.toString();
+                    tgUserName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || `@${user.username}`;
+                    document.getElementById('user-fullname').innerText = tgUserName;
+                    document.getElementById('user-username').innerText = user.username ? `@${user.username}` : '@no_username';
+                    document.getElementById('user-id').innerText = tgUserId;
+                }
+                inviterId = tg.initDataUnsafe?.start_param || "";
+            }
+
+            if (!inviterId) {
+                const urlParams = new URLSearchParams(window.location.search);
+                inviterId = urlParams.get('startapp') || urlParams.get('start_param') || "";
+            }
+
+            // Sync User Cloud Storage
+            syncFirebaseUser(tgUserId, tgUserName, inviterId);
+            updateReferralLinkUI(tgUserId);
+
+            const nowTime = Date.now();
+            activePayouts = [
+                { phone: `${prefixes[0]}***${Math.floor(1000 + Math.random() * 9000)}`, method: methods[0], amount: amounts[1], timestamp: nowTime - 3000 },
+                { phone: `${prefixes[1]}***${Math.floor(1000 + Math.random() * 9000)}`, method: methods[1], amount: amounts[3], timestamp: nowTime - 120000 },
+                { phone: `${prefixes[2]}***${Math.floor(1000 + Math.random() * 9000)}`, method: methods[2], amount: amounts[0], timestamp: nowTime - 300000 }
+            ];
+            renderPayouts();
+            setInterval(addNewPayout, 6000);
+            setInterval(renderPayouts, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dollarclick - Executive Admin Dashboard</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hind+Siliguri:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #060d0b;
+            --card-bg: rgba(15, 32, 25, 0.75);
+            --card-border: rgba(52, 211, 153, 0.25);
+            --emerald-glow: #10b981;
+            --leaf-green: #34d399;
+            --soft-mint: #a7f3d0;
+            --accent-gold: #fbbf24;
+            --danger-red: #f87171;
+            --info-blue: #38bdf8;
+            --text-main: #f0fdf4;
+            --text-muted: #9ca3af;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; padding: 20px 12px; }
+
+        /* Ambient Glow Effect */
+        .ambient-glow {
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+            width: 320px; height: 200px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(0,0,0,0) 75%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* Login Screen Unique Glass Box */
+        .login-wrapper {
+            position: relative; z-index: 10; max-width: 400px; margin: 80px auto;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 24px; padding: 32px 24px; text-align: center;
+            backdrop-filter: blur(16px); box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .admin-avatar {
+            width: 60px; height: 60px; margin: 0 auto 16px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: #fff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .login-title { font-size: 1.35rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+        .login-sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; }
+        .login-input {
+            width: 100%; padding: 14px; background: rgba(6, 13, 11, 0.8);
+            border: 1px solid var(--card-border); border-radius: 12px;
+            color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s; margin-bottom: 18px;
+        }
+        .login-input:focus { border-color: var(--leaf-green); box-shadow: 0 0 10px rgba(52, 211, 153, 0.2); }
+        .btn-login {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff; border: none; border-radius: 12px; font-weight: 800; font-size: 0.95rem;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Dashboard Screen */
+        #admin-dashboard { display: none; max-width: 850px; margin: 0 auto; position: relative; z-index: 10; }
+        
+        .dash-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            padding: 16px 20px; border-radius: 18px; backdrop-filter: blur(12px); margin-bottom: 20px;
+        }
+        .dash-brand { display: flex; align-items: center; gap: 12px; }
+        .dash-title { font-size: 1.15rem; font-weight: 800; color: #fff; }
+        .dash-status-dot { width: 8px; height: 8px; background: var(--leaf-green); border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--leaf-green); }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--danger-red); padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer;
+        }
+
+        /* Summary Analytics Grid */
+        .analytics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 16px; padding: 14px; text-align: center; backdrop-filter: blur(10px);
+        }
+        .stat-val { font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; }
+        .stat-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+
+        /* Request Cards */
+        .section-heading { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .requests-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        .req-card {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 18px; padding: 16px 18px; display: flex;
+            justify-content: space-between; align-items: center; gap: 14px; backdrop-filter: blur(10px);
+        }
+        .user-info-box { display: flex; flex-direction: column; gap: 4px; }
+        .req-user-name { font-size: 0.95rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .method-pill { font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; background: rgba(56, 189, 248, 0.15); color: var(--info-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .req-details-text { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
+        
+        .amount-action-box { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .req-amount-tag { font-size: 1.15rem; font-weight: 800; color: var(--accent-gold); }
+
+        .btn-group { display: flex; gap: 6px; }
+        .btn-approve { background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-weight: 800; font-size: 0.75rem; cursor: pointer; }
+        .btn-reject { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-weight: 800; font-size: 0.75rem; cursor: pointer; }
+
+        .status-badge { font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 8px; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--leaf-green); border: 1px solid rgba(52, 211, 153, 0.3); }
+        .badge-rejected { background: rgba(239, 68, 68, 0.15); color: var(--danger-red); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        @media (max-width: 600px) {
+            .analytics-grid { grid-template-columns: 1fr; }
+            .req-card { flex-direction: column; align-items: flex-start; }
+            .amount-action-box { width: 100%; flex-direction: row; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <!-- ADMIN LOGIN -->
+    <div class="login-wrapper" id="login-box">
+        <div class="admin-avatar"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="login-title">Admin Access</div>
+        <div class="login-sub">Dollarclick Control Dashboard</div>
+        <input type="password" id="admin-pass" class="login-input" placeholder="পাসওয়ার্ড লিখুন (ডিফল্ট: 123456)">
+        <button class="btn-login" onclick="loginAdmin()">Login Control Center</button>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="admin-dashboard">
+        <div class="dash-header">
+            <div class="dash-brand">
+                <span class="dash-status-dot"></span>
+                <span class="dash-title">Withdrawal Control Center</span>
+            </div>
+            <button class="btn-logout" onclick="location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
+
+        <!-- ANALYTICS SUMMARY -->
+        <div class="analytics-grid">
+            <div class="stat-card">
+                <div class="stat-val" style="color: var(--accent-gold);" id="stat-pending">0</div>
+                <div class="stat-label">Pending Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color: var(--leaf-green);" id="stat-approved">0</div>
+                <div class="stat-label">Approved Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color: var(--info-blue);" id="stat-paid">৳0</div>
+                <div class="stat-label">Total Paid Amount</div>
+            </div>
+        </div>
+
+        <div class="section-heading"><i class="fa-solid fa-receipt"></i> All User Withdrawal Requests</div>
+        <div class="requests-list" id="requests-list">
+            <div style="text-align: center; color: var(--text-muted); padding: 30px;">ডাটা লোড হচ্ছে...</div>
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULE SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, increment 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzuwEw2yDe-Bwv5ZA-cgIAx67bDbHMuAI",
+            authDomain: "dollarclick-31f9b.firebaseapp.com",
+            projectId: "dollarclick-31f9b",
+            storageBucket: "dollarclick-31f9b.firebasestorage.app",
+            messagingSenderId: "305610344625",
+            appId: "1:305610344625:web:fea7da0eb88c81ea28fa90",
+            measurementId: "G-84KWLB1YLE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // LOGIN VERIFICATION
+        window.loginAdmin = function() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === "123456") { // আপনার নিজস্ব সিক্রেট পাসওয়ার্ড পরিবর্তন করুন
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('admin-dashboard').style.display = 'block';
+                loadAllWithdrawRequests();
+            } else {
+                alert("❌ ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিয়ে প্রবেশ করুন।");
+            }
+        };
+
+        // REAL-TIME REQUESTS FETCHING
+        function loadAllWithdrawRequests() {
+            const container = document.getElementById('requests-list');
+            
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                container.innerHTML = '';
+                let hasRequests = false;
+                let countPending = 0;
+                let countApproved = 0;
+                let totalPaidAmount = 0;
+
+                snapshot.forEach((userDoc) => {
+                    const userData = userDoc.data();
+                    const userId = userDoc.id;
+                    const history = userData.withdrawHistory || [];
+
+                    history.forEach((req, index) => {
+                        hasRequests = true;
+                        
+                        // Calculate Statistics
+                        if (req.status === 'success') {
+                            countApproved++;
+                            totalPaidAmount += parseFloat(req.amount || 0);
+                        } else if (req.status !== 'rejected') {
+                            countPending++;
+                        }
+
+                        const reqCard = document.createElement('div');
+                        reqCard.className = 'req-card';
+
+                        let actionButtons = '';
+                        if (req.status === 'success') {
+                            actionButtons = '<span class="status-badge badge-success"><i class="fa-solid fa-circle-check"></i> Approved</span>';
+                        } else if (req.status === 'rejected') {
+                            actionButtons = '<span class="status-badge badge-rejected"><i class="fa-solid fa-circle-xmark"></i> Rejected</span>';
+                        } else {
+                            actionButtons = `
+                                <div class="btn-group">
+                                    <button class="btn-approve" onclick="approveRequest('${userId}', ${index})">Approve</button>
+                                    <button class="btn-reject" onclick="rejectRequest('${userId}', ${index}, ${req.amount})">Reject</button>
+                                </div>
+                            `;
+                        }
+
+                        reqCard.innerHTML = `
+                            <div class="user-info-box">
+                                <span class="req-user-name">${userData.userName || 'Telegram User'} <span class="method-pill">${req.method}</span></span>
+                                <span class="req-details-text"><i class="fa-solid fa-mobile-screen-button"></i> <b>${req.phone}</b> | ID: ${userId}</span>
+                                <span class="req-details-text"><i class="fa-regular fa-clock"></i> ${new Date(req.timestamp).toLocaleString('bn-BD')}</span>
+                            </div>
+                            <div class="amount-action-box">
+                                <span class="req-amount-tag">৳${req.amount}.00</span>
+                                ${actionButtons}
+                            </div>
+                        `;
+                        container.appendChild(reqCard);
+                    });
+                });
+
+                // Update Stat Cards
+                document.getElementById('stat-pending').innerText = countPending;
+                document.getElementById('stat-approved').innerText = countApproved;
+                document.getElementById('stat-paid').innerText = '৳' + totalPaidAmount.toFixed(0);
+
+                if (!hasRequests) {
+                    container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px;">এখনও কোনো উইথড্র রিকোয়েস্ট ডাটাবেজে আসেনি।</div>';
+                }
+            });
+        }
+
+        // APPROVE ACTION
+        window.approveRequest = async function(userId, index) {
+            if (!confirm("আপনি কি নিশ্চিত যে আপনি টাকা পাঠিয়েছেন এবং রিকোয়েস্টটি Approve করতে চান?")) return;
+            const userRef = doc(db, "users", userId);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                let history = userSnap.data().withdrawHistory || [];
+                history[index].status = 'success';
+                await updateDoc(userRef, { withdrawHistory: history });
+                alert("✅ পেমেন্ট সফলভাবে Approved হয়েছে!");
+            }
+        };
+
+        // REJECT & REFUND ACTION
+        window.rejectRequest = async function(userId, index, amount) {
+            if (!confirm("রিকোয়েস্টটি Reject করতে চান? (উইথড্র বাতিল করে ইউজারের মেইন অ্যাকাউন্টে টাকা রিফান্ড করা হবে)")) return;
+            const userRef = doc(db, "users", userId);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                let history = userSnap.data().withdrawHistory || [];
+                history[index].status = 'rejected';
+                await updateDoc(userRef, { 
+                    withdrawHistory: history,
+                    balance: increment(amount) // Refund to user balance
+                });
+                alert("❌ উইথড্র Reject করা হয়েছে এবং টাকা ইউজারের ব্যালেন্সে রিফান্ড দেওয়া হয়েছে!");
+            }
+        };
+    </script>
+</body>
+</html>
